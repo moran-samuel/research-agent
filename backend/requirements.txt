@@ -1,4 +1,4 @@
-duckduckgo_search
+ddgs
 fastapi
 pydantic
 uvicorn

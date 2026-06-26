@@ -8,7 +8,7 @@ def ask_llm(prompt):
             "model": "llama3.1",
             "prompt": prompt,
         },
-        timeout=60,
+        timeout=120,
     )
     print("LLM response:", response.status_code, response.text)
     response.raise_for_status()

@@ -11,6 +11,7 @@ A full-stack AI research assistant that performs web search, retrieves relevant 
 * FastAPI backend
 * Streamlit frontend
 * Dockerized full-stack deployment
+* Persistent vector database
 
 ## 🧠 Tech Stack
 
@@ -61,11 +62,10 @@ http://localhost:8000/docs
 ## 📌 Future Improvements
 
 * Semantic reranking
-* Persistent vector database
 * Streaming responses
 * Multi-agent workflows
 
 ## 💡 Notes
 
 * Ollama must be running locally (not inside Docker)
-* Uses `host.docker.internal` to connect containers to host LLM
+* Uses `host.docker.internal` to connect containers to host LLM may need to be changed to 172.17.0.1 on Linux

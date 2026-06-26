@@ -17,7 +17,7 @@ def get_embedding(text):
     response = requests.post(
         "http://host.docker.internal:11434/v1/embeddings",
         json={"model": "nomic-embed-text", "input": [text]},
-        timeout=30,
+        timeout=60,
     )
     response.raise_for_status()
     data = response.json()
@@ -38,7 +38,7 @@ def get_embedding(text):
     return embedding
 
 
-client = chromadb.Client()
+client = chromadb.PersistentClient(path="/app/chroma_db")
 collection = client.get_or_create_collection(name="research_docs")
 
 
@@ -52,18 +52,26 @@ def add_documents(docs):
         body = (d.get("body") or "").strip()
         if not body:
             continue
+        
+        link = d.get("link", "")
+        if link:
+            existing = collection.get(where={"link": link})
+            if existing and existing["ids"]:
+                continue
         chunks = chunk_text(body)
-        for chunk in chunks:
+        for j, chunk in enumerate(chunks):
             emb = get_embedding(chunk)
             if not emb:
                 continue
             valid_chunks.append(chunk)
             embeddings.append(emb)
             metadatas.append({"title": d.get("title", ""), "link": d.get("link", "")})
-            ids.append(str(i))
+            ids.append(f"{i}_{j}")
 
     if not valid_chunks:
         return
+    
+
 
     collection.add(
         documents=valid_chunks,

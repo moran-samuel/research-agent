@@ -13,10 +13,14 @@ if st.button("Research"):
 
     data = response.json()
 
-    st.subheader("Answer")
-    st.write(data["answer"])
+    if "error" in data:
+        st.error(f"Backend error: {data['error']}")
 
-    st.subheader("Sources")
+    else:
+        st.subheader("Answer")
+        st.write(data["answer"])
 
-    for s in data["sources"]:
-        st.write(f"[{s['title']}]({s['link']})")
+        st.subheader("Sources")
+
+        for s in data["sources"]:
+            st.write(f"[{s['title']}]({s['link']})")
