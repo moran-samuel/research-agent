@@ -3,3 +3,4 @@ fastapi
 pydantic
 uvicorn
 chromadb
+rank_bm25

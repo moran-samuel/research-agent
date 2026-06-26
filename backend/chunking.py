@@ -1,3 +1,5 @@
+from rank_bm25 import BM25Okapi
+
 def chunk_text(text, chunk_size=400, overlap=100):
     chunks = []
 
@@ -15,18 +17,18 @@ def chunk_text(text, chunk_size=400, overlap=100):
 
 
 # key word ranking function to boost relevance of chunks that contain more query words
-def rank_chunks(chunks, query):
+def rank_chunks(chunks, query, top_k=3):
 
-    scored = []
-
-    query_words = set(query.lower().split())
-
-    for chunk in chunks:
-        text = chunk["body"].lower()
-        score = sum(1 for w in query_words if w in text)
-
-        scored.append((score, chunk))
-
-    scored.sort(key=lambda x: x[0], reverse=True)
-
-    return [c for _, c in scored[:3]]
+    if not chunks:
+        return []
+ 
+    # BM25 expects tokenized input — split each chunk and the query into word lists
+    tokenized_chunks = [chunk["body"].lower().split() for chunk in chunks]
+    tokenized_query = query.lower().split()
+ 
+    bm25 = BM25Okapi(tokenized_chunks)
+    scores = bm25.get_scores(tokenized_query)
+ 
+    # Pair each chunk with its score, sort descending, return top_k
+    ranked = sorted(zip(scores, chunks), key=lambda x: x[0], reverse=True)
+    return [chunk for _, chunk in ranked[:top_k]]
